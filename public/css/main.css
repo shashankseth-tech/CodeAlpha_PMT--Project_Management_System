@@ -1230,3 +1230,197 @@ body {
   border-color: var(--border-glass-highlight);
   transform: translateY(-1px);
 }
+
+
+/* ==========================================================================
+   PMT Lucide SVG Icon Pack System
+   ========================================================================== */
+
+.lucide,
+svg.lucide {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1em;
+  stroke-width: 2;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast), stroke var(--transition-fast);
+}
+
+i[data-lucide] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  line-height: 1;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Specific icon size classes */
+.icon-xs, svg.icon-xs { width: 12px; height: 12px; }
+.icon-sm, svg.icon-sm { width: 14px; height: 14px; }
+.icon-md, svg.icon-md { width: 16px; height: 16px; }
+.icon-lg, svg.icon-lg { width: 18px; height: 18px; }
+.icon-xl, svg.icon-xl { width: 22px; height: 22px; }
+
+/* Dropdown chevron helper */
+.dropdown-chevron,
+.dropdown-chevron svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+  transition: transform var(--transition-fast);
+}
+
+/* Nav & Brand icons */
+.brand-logo-icon svg,
+.auth-logo-badge svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.2;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.view-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.view-tab svg {
+  width: 15px;
+  height: 15px;
+}
+
+.spatial-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spatial-theme-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-mode-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.dropdown-item svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Sidebar priority icons */
+.filter-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-pill-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.filter-pill-btn .icon-urgent,
+.icon-urgent {
+  color: var(--prio-urgent);
+}
+
+.filter-pill-btn .icon-high,
+.icon-high {
+  color: var(--prio-high);
+}
+
+.filter-pill-btn .icon-medium,
+.icon-medium {
+  color: var(--prio-medium);
+}
+
+.filter-pill-btn .icon-low,
+.icon-low {
+  color: var(--prio-low);
+}
+
+/* Quick filter pills in toolbar */
+.quick-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-filter-chip svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Toolbar buttons */
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Buttons with icons */
+.btn-primary,
+.btn-secondary,
+.btn-danger-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary svg,
+.btn-secondary svg,
+.btn-danger-outline svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Modal close and icon titles */
+.modal-close-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+}
+
+.modal-title svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: -2px;
+}

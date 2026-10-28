@@ -8,13 +8,62 @@ const UI = {
     this.bindGlobalEvents();
     this.updateUserUI();
     this.renderTheme();
+    this.initIcons();
+  },
+
+  initIcons(root = document) {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      try {
+        window.lucide.createIcons({
+          root: root,
+          attrs: {
+            class: 'lucide-icon',
+            'stroke-width': '2'
+          }
+        });
+      } catch (e) {
+        console.warn('Lucide icon init warning:', e);
+      }
+    }
+  },
+
+  icon(name, options = {}) {
+    if (!window.lucide || !window.lucide.icons) {
+      return '';
+    }
+    const size = options.size || 16;
+    const strokeWidth = options.strokeWidth || 2;
+    const cls = options.class || '';
+
+    // Convert kebab-case or snake-case to PascalCase (e.g. check-square -> CheckSquare, trash-2 -> Trash2)
+    const pascalName = name
+      .split('-')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('');
+
+    const iconDef = window.lucide.icons[pascalName] || window.lucide.icons[name];
+    if (!iconDef) {
+      return '';
+    }
+
+    try {
+      const svgEl = window.lucide.createElement(iconDef, {
+        width: size,
+        height: size,
+        'stroke-width': strokeWidth,
+        class: ('lucide lucide-' + name + ' ' + cls).trim()
+      });
+      return svgEl.outerHTML;
+    } catch (e) {
+      return '';
+    }
   },
 
   renderTheme() {
     document.documentElement.setAttribute('data-theme', AppState.theme);
     const themeIcons = document.querySelectorAll('.theme-mode-icon');
     themeIcons.forEach(icon => {
-      icon.textContent = AppState.theme === 'dark' ? '🌙' : '☀️';
+      icon.innerHTML = this.icon(AppState.theme === 'dark' ? 'moon' : 'sun', { size: 16 });
     });
   },
 
@@ -38,7 +87,10 @@ const UI = {
       }
     } else {
       if (avatar) {
-        avatar.textContent = '👤';
+        avatar.innerHTML = this.icon('user', { size: 14 });
+        avatar.style.display = 'inline-flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
         avatar.style.backgroundColor = 'var(--text-muted)';
       }
       if (name) {
@@ -182,7 +234,7 @@ const UI = {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     this.playSound('success');
-    this.showToast('Export Complete! 📥', `Saved as ${filename}`, 'success');
+    this.showToast('Export Complete', `Saved as ${filename}`, 'success');
   },
 
   openShortcutsModal() {
@@ -292,7 +344,7 @@ const UI = {
           <div style="font-weight: 700; color: var(--text-primary);">${this.escapeHtml(p.title)}</div>
           <div style="font-size: 0.72rem; color: var(--text-muted);">${p.task_count || 0} tasks • ${p.category || 'General'}</div>
         </div>
-        ${isActive ? '<span style="font-size: 0.8rem; color: var(--accent-primary); font-weight: 800;">✓</span>' : ''}
+        ${isActive ? `<span style="color: var(--accent-primary); display: flex; align-items: center;">${this.icon('check', { size: 14, strokeWidth: 2.5 })}</span>` : ''}
       `;
       item.onclick = () => {
         document.getElementById('project-selector-dropdown')?.classList.remove('show');
@@ -430,8 +482,8 @@ const UI = {
             <span class="col-count-badge">${colTasks.length}</span>
           </div>
           <div class="col-header-actions">
-            <button class="col-add-btn" title="Add task in ${this.escapeHtml(col.title)}">+</button>
-            ${columns.length > 2 ? `<button class="col-action-btn col-del-btn" title="Delete column">&times;</button>` : ''}
+            <button class="col-add-btn" title="Add task in ${this.escapeHtml(col.title)}">${this.icon('plus', { size: 14 })}</button>
+            ${columns.length > 2 ? `<button class="col-action-btn col-del-btn" title="Delete column">${this.icon('trash-2', { size: 14 })}</button>` : ''}
           </div>
         </div>
         <div class="cards-container" data-column-id="${col.id}"></div>
@@ -487,7 +539,7 @@ const UI = {
             project.tasks.push(res.task);
             this.playSound('success');
             this.renderCurrentView();
-            this.showToast('Task Created ⚡', `"${title}" added to ${col.title}`, 'success');
+            this.showToast('Task Created', `"${title}" added to ${col.title}`, 'success');
           } catch (err) {
             this.showToast('Error', err.message || 'Failed to create task', 'danger');
           }
@@ -513,7 +565,7 @@ const UI = {
     addColCard.className = 'kanban-add-column-card';
     addColCard.innerHTML = `
       <div id="add-column-trigger" class="add-column-trigger-btn">
-        <span>➕</span> Add New Column
+        <span>${this.icon('plus', { size: 15 })}</span> Add New Column
       </div>
       <form id="add-column-form" class="add-column-form" style="display: none;">
         <input type="text" id="add-column-input" class="add-column-input" placeholder="e.g. QA / Testing" required>
@@ -550,7 +602,7 @@ const UI = {
         project.columns = res.columns;
         this.playSound('success');
         this.renderCurrentView();
-        this.showToast('Column Added 🗂️', `Column "${title}" created successfully`, 'success');
+        this.showToast('Column Added', `Column "${title}" created successfully`, 'success');
       } catch (err) {
         this.showToast('Error', err.message || 'Failed to add column', 'danger');
       }
@@ -590,12 +642,12 @@ const UI = {
     wrapper.innerHTML = `
       <div class="calendar-header-bar">
         <div class="calendar-month-title">
-          <span>📅 ${monthNames[month]} ${year}</span>
+          <span>${this.icon('calendar', { size: 17 })} ${monthNames[month]} ${year}</span>
         </div>
         <div class="calendar-nav-group">
-          <button id="cal-prev-btn" class="calendar-nav-btn">◀ Prev</button>
+          <button id="cal-prev-btn" class="calendar-nav-btn">${this.icon('chevron-left', { size: 13 })} Prev</button>
           <button id="cal-today-btn" class="calendar-nav-btn">Today</button>
-          <button id="cal-next-btn" class="calendar-nav-btn">Next ▶</button>
+          <button id="cal-next-btn" class="calendar-nav-btn">Next ${this.icon('chevron-right', { size: 13 })}</button>
         </div>
       </div>
       <div class="calendar-grid-container">
@@ -742,14 +794,14 @@ const UI = {
       if (isOver && !isCompleted) {
         badgeClass = 'overdue';
         const daysAgo = Math.abs(diffDays);
-        dueText = daysAgo > 0 ? `⚠️ Overdue (${daysAgo}d)` : `⚠️ Overdue`;
+        dueText = daysAgo > 0 ? `${this.icon('alert-triangle', { size: 12, class: 'icon-urgent' })} Overdue (${daysAgo}d)` : `${this.icon('alert-triangle', { size: 12, class: 'icon-urgent' })} Overdue`;
       } else if (diffDays === 0) {
         badgeClass = 'today';
-        dueText = `⏰ Due Today`;
+        dueText = `${this.icon('clock', { size: 12 })} Due Today`;
       } else if (diffDays === 1) {
-        dueText = `📅 Tomorrow`;
+        dueText = `${this.icon('calendar', { size: 12 })} Tomorrow`;
       } else {
-        dueText = `📅 ${task.due_date}`;
+        dueText = `${this.icon('calendar', { size: 12 })} ${task.due_date}`;
       }
 
       dueHtml = `
@@ -764,7 +816,7 @@ const UI = {
     if (totalSubtasks > 0) {
       subtaskBadgeHtml = `
         <span class="meta-item ${subtaskDone ? 'completed-all' : ''}" title="Checklist progress">
-          ☑️ ${doneCount}/${totalSubtasks}
+          ${this.icon('check-square', { size: 12 })} ${doneCount}/${totalSubtasks}
         </span>
       `;
     }
@@ -774,7 +826,7 @@ const UI = {
     if (task.commentCount > 0) {
       commentBadgeHtml = `
         <span class="meta-item" title="Comments">
-          💬 ${task.commentCount}
+          ${this.icon('message-square', { size: 12 })} ${task.commentCount}
         </span>
       `;
     }
@@ -794,7 +846,7 @@ const UI = {
       <div class="card-top-row">
         <div class="card-top-left">
           <button class="card-check-btn ${isCompleted ? 'completed' : ''}" title="${isCompleted ? 'Mark incomplete' : 'Mark complete'}">
-            ${isCompleted ? '✓' : ''}
+            ${isCompleted ? this.icon('check', { size: 11, strokeWidth: 2.8 }) : ''}
           </button>
           <span class="priority-pill ${priority}">
             <span class="prio-dot"></span>
@@ -833,7 +885,7 @@ const UI = {
           this.playSound(isCompleted ? 'move' : 'success');
           this.renderCurrentView();
           this.showToast(
-            isCompleted ? 'Task Reopened' : 'Task Completed! 🎉',
+            isCompleted ? 'Task Reopened' : 'Task Completed',
             `"${task.title}" marked as ${isCompleted ? 'active' : 'done'}`,
             isCompleted ? 'info' : 'success'
           );
@@ -898,7 +950,7 @@ const UI = {
                       ${t.priority}
                     </span>
                   </td>
-                  <td>${t.due_date ? `${this.isOverdue(t.due_date) ? '⚠️ ' : ''}${t.due_date}` : '—'}</td>
+                  <td>${t.due_date ? `${this.isOverdue(t.due_date) ? this.icon('alert-triangle', { size: 12, class: 'icon-urgent' }) + ' ' : ''}${t.due_date}` : '—'}</td>
                   <td>${subCount > 0 ? `${subDone}/${subCount}` : '—'}</td>
                   <td>
                     <div class="card-assignees">
@@ -1051,7 +1103,7 @@ const UI = {
       <div class="team-members-panel">
         <div class="chart-title">
           <span>Project Members (${project.members?.length || 0})</span>
-          <button class="btn-primary" id="btn-open-invite" style="font-size: 0.8rem; padding: 5px 12px;">+ Add Teammate</button>
+          <button class="btn-primary" id="btn-open-invite" style="font-size: 0.8rem; padding: 5px 12px;">${this.icon('user-plus', { size: 14 })} Add Teammate</button>
         </div>
         <div class="member-list">
           ${(project.members || []).map(m => `
@@ -1263,7 +1315,7 @@ const UI = {
           <input type="checkbox" class="checklist-checkbox" ${s.completed ? 'checked' : ''}>
           <span class="checklist-item-title ${s.completed ? 'completed' : ''}">${this.escapeHtml(s.title)}</span>
         </div>
-        <button class="checklist-delete-btn" title="Delete subtask">&times;</button>
+        <button class="checklist-delete-btn" title="Delete subtask">${this.icon('trash-2', { size: 13 })}</button>
       `;
 
       item.querySelector('.checklist-checkbox').onchange = async (e) => {
@@ -1514,7 +1566,10 @@ const UI = {
       if (sEmail) sEmail.textContent = `${curUser.email} • ${curUser.role || 'Team Member'}`;
     } else {
       if (sAvatar) {
-        sAvatar.textContent = '👤';
+        sAvatar.innerHTML = this.icon('user', { size: 16 });
+        sAvatar.style.display = 'inline-flex';
+        sAvatar.style.alignItems = 'center';
+        sAvatar.style.justifyContent = 'center';
         sAvatar.style.backgroundColor = 'var(--text-muted)';
       }
       if (sName) sName.textContent = 'Guest / Signed Out';
@@ -1567,7 +1622,7 @@ const UI = {
     if (appRoot) appRoot.style.display = 'flex';
   },
 
-  // Show Full-Screen Authentication / Login Panel (Shown when logged out)
+    // Show Full-Screen Authentication / Login Panel (Shown when logged out)
   showAuthScreen(initialTab = 'login') {
     const authScreen = document.getElementById('auth-screen');
     const appRoot = document.getElementById('app-root');
@@ -1586,17 +1641,29 @@ const UI = {
     const registerTab = document.getElementById('tab-auth-register');
     const loginForm = document.getElementById('form-auth-login');
     const registerForm = document.getElementById('form-auth-register');
+    const forgotForm = document.getElementById('form-auth-forgot');
 
-    if (initialTab === 'register') {
+    if (initialTab === 'forgot') {
+      loginTab?.classList.remove('active');
+      registerTab?.classList.remove('active');
+      if (loginForm) loginForm.style.display = 'none';
+      if (registerForm) registerForm.style.display = 'none';
+      if (forgotForm) forgotForm.style.display = 'flex';
+      this.initIcons(forgotForm);
+    } else if (initialTab === 'register') {
       loginTab?.classList.remove('active');
       registerTab?.classList.add('active');
       if (loginForm) loginForm.style.display = 'none';
+      if (forgotForm) forgotForm.style.display = 'none';
       if (registerForm) registerForm.style.display = 'flex';
+      this.initIcons(registerForm);
     } else {
       registerTab?.classList.remove('active');
       loginTab?.classList.add('active');
-      if (loginForm) loginForm.style.display = 'flex';
       if (registerForm) registerForm.style.display = 'none';
+      if (forgotForm) forgotForm.style.display = 'none';
+      if (loginForm) loginForm.style.display = 'flex';
+      this.initIcons(loginForm);
     }
   },
 
@@ -1683,7 +1750,7 @@ const UI = {
         const next = AppState.theme === 'dark' ? 'light' : 'dark';
         AppState.setTheme(next);
         this.renderTheme();
-        this.showToast('Theme Changed', `Switched to ${next === 'dark' ? 'Dark Mode 🌙' : 'Light Mode ☀️'}`, 'info');
+        this.showToast('Theme Changed', `Switched to ${next === 'dark' ? 'Dark Mode' : 'Light Mode'}`, 'info');
       };
     }
 
@@ -1710,9 +1777,25 @@ const UI = {
       };
     }
 
-    const linkToLogin = document.getElementById('link-switch-to-login');
+        const linkToLogin = document.getElementById('link-switch-to-login');
     if (linkToLogin) {
       linkToLogin.onclick = (e) => {
+        e.preventDefault();
+        this.showAuthScreen('login');
+      };
+    }
+
+    const linkForgot = document.getElementById('link-forgot-password');
+    if (linkForgot) {
+      linkForgot.onclick = (e) => {
+        e.preventDefault();
+        this.showAuthScreen('forgot');
+      };
+    }
+
+    const linkLoginFromForgot = document.getElementById('link-switch-to-login-from-forgot');
+    if (linkLoginFromForgot) {
+      linkLoginFromForgot.onclick = (e) => {
         e.preventDefault();
         this.showAuthScreen('login');
       };
@@ -1780,7 +1863,7 @@ const UI = {
             project.tasks = res.tasks;
             this.playSound('success');
             this.renderCurrentView();
-            this.showToast('Tasks Archived 📦', `${res.archivedCount} completed tasks archived`, 'success');
+            this.showToast('Tasks Archived', `${res.archivedCount} completed tasks archived`, 'success');
           } catch (err) {
             this.showToast('Error', err.message || 'Failed to archive tasks', 'danger');
           }
@@ -1852,7 +1935,7 @@ const UI = {
         const next = AppState.theme === 'dark' ? 'light' : 'dark';
         AppState.setTheme(next);
         this.renderTheme();
-        this.showToast('Theme Shortcut [D]', `Switched to ${next === 'dark' ? 'Dark Mode 🌙' : 'Light Mode ☀️'}`, 'info');
+        this.showToast('Theme Shortcut [D]', `Switched to ${next === 'dark' ? 'Dark Mode' : 'Light Mode'}`, 'info');
       }
     });
 

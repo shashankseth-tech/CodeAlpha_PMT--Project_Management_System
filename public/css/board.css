@@ -1004,3 +1004,76 @@ body.compact-view .card-title {
   text-decoration: underline;
 }
 
+
+
+/* Lucide Board & Card Icons */
+.meta-item svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.card-check-btn svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 2.8;
+}
+
+.col-add-btn,
+.col-del-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.col-add-btn svg,
+.col-del-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.add-column-trigger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-column-trigger-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.calendar-month-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-month-title svg {
+  width: 17px;
+  height: 17px;
+  color: var(--accent-primary);
+}
+
+.calendar-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.calendar-nav-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.checklist-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checklist-delete-btn svg {
+  width: 13px;
+  height: 13px;
+}

@@ -85,6 +85,31 @@ const API = {
     });
   },
 
+  async forgotPassword(email) {
+    return this.request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+  },
+
+  async resetPassword(email, code, newPassword) {
+    const res = await this.request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, code, newPassword })
+    });
+    if (res.token) {
+      this.setToken(res.token);
+    }
+    return res;
+  },
+
+  async changePassword(currentPassword, newPassword) {
+    return this.request('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+  },
+
   // Projects
   async getProjects() {
     return this.request('/projects');

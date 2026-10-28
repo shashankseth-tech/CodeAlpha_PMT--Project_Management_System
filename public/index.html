@@ -17,14 +17,14 @@
     <!-- Top-Right Controls on Auth Screen -->
     <div class="auth-top-controls">
       <button id="auth-theme-toggle-btn" class="spatial-theme-toggle" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
-        <span class="theme-mode-icon">🌙</span>
+        <span class="theme-mode-icon"><i data-lucide="moon"></i></span>
       </button>
     </div>
 
     <!-- Centered Glassmorphic Auth Card -->
     <div class="auth-card">
       <div class="auth-brand-header">
-        <div class="auth-logo-badge">⚡</div>
+        <div class="auth-logo-badge"><i data-lucide="zap"></i></div>
         <h1 class="auth-title">PMT</h1>
         <p class="auth-subtitle">Project Management Tool • Agile Workspace & Operations</p>
       </div>
@@ -48,7 +48,10 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="login-password">Password</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
+              <a href="#" id="link-forgot-password" style="font-size: 0.76rem; color: var(--accent-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+            </div>
             <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password" required>
           </div>
 
@@ -104,6 +107,62 @@
           </div>
         </form>
 
+        
+        <!-- 3. Forgot / Reset Password Form -->
+        <form id="form-auth-forgot" class="auth-form" style="display: none;">
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="key-round" style="width: 16px; height: 16px; color: var(--accent-primary);"></i> Reset Your Password
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.4;">
+              Enter your registered email address to receive a verification code and create a new password.
+            </p>
+          </div>
+
+          <!-- Email with Get Code button -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="forgot-email">Email Address</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="email" id="forgot-email" class="form-input" placeholder="e.g. alex@pmt.io" autocomplete="email" required style="flex: 1;">
+              <button type="button" id="btn-request-reset-code" class="btn-secondary" style="padding: 0 12px; font-size: 0.78rem; white-space: nowrap; font-weight: 700;">
+                <i data-lucide="send" style="width: 12px; height: 12px;"></i> Get Code
+              </button>
+            </div>
+          </div>
+
+          <!-- Code Display Banner (shown when generated) -->
+          <div id="forgot-code-banner" style="display: none; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.8rem; align-items: center; justify-content: space-between;">
+            <span style="color: var(--text-secondary); font-size: 0.76rem;">Reset Code:</span>
+            <span id="forgot-code-display" style="font-family: 'JetBrains Mono', monospace; font-size: 1.05rem; font-weight: 800; letter-spacing: 2px; color: var(--accent-primary);"></span>
+          </div>
+
+          <!-- 6-digit Code Input -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="forgot-code">6-Digit Verification Code</label>
+            <input type="text" id="forgot-code" class="form-input" placeholder="e.g. 482910" maxlength="6" autocomplete="one-time-code" required>
+          </div>
+
+          <!-- New Password -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="forgot-new-password">New Password * (min 6 characters)</label>
+            <input type="password" id="forgot-new-password" class="form-input" placeholder="••••••••" minlength="6" autocomplete="new-password" required>
+          </div>
+
+          <!-- Confirm New Password -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="forgot-confirm-password">Confirm New Password</label>
+            <input type="password" id="forgot-confirm-password" class="form-input" placeholder="••••••••" minlength="6" autocomplete="new-password" required>
+          </div>
+
+          <button type="submit" class="btn-primary auth-submit-btn">
+            <i data-lucide="check-circle-2"></i> Update Password & Sign In
+          </button>
+
+          <div class="auth-switch-prompt">
+            Remember your password? <a href="#" id="link-switch-to-login-from-forgot">Back to Sign In</a>
+          </div>
+        </form>
+
         <!-- Quick 1-Click Demo Personas -->
         <div class="auth-demo-divider">
           <span>Or Quick 1-Click Demo Login</span>
@@ -136,7 +195,7 @@
     <header class="app-navbar">
       <div class="nav-left">
         <a href="#" class="brand-badge" title="PMT — Project Management Tool">
-          <div class="brand-logo-icon">⚡</div>
+          <div class="brand-logo-icon"><i data-lucide="zap"></i></div>
           <span class="brand-title-text">PMT</span>
           <span class="brand-subtext">PRO</span>
         </a>
@@ -146,14 +205,14 @@
           <button id="project-selector-btn" class="project-selector-btn" title="View or switch projects">
             <span id="project-selector-dot" class="project-color-dot" style="background-color: var(--accent-primary);"></span>
             <span id="project-selector-name">Acme SaaS 2.0</span>
-            <span style="font-size: 0.75rem; opacity: 0.7;">▼</span>
+            <span class="dropdown-chevron"><i data-lucide="chevron-down"></i></span>
           </button>
 
           <!-- Projects Dropdown Menu -->
           <div id="project-selector-dropdown" class="dropdown-menu" style="min-width: 270px; left: 0; right: auto;">
             <div class="dropdown-header">
               <span>Your Projects</span>
-              <button id="nav-new-proj-btn" style="background: none; border: none; color: var(--accent-primary); font-size: 0.75rem; font-weight: 700; cursor: pointer;">+ New</button>
+              <button id="nav-new-proj-btn" style="background: none; border: none; color: var(--accent-primary); font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="plus" style="width: 12px; height: 12px;"></i> New</button>
             </div>
             <div id="project-selector-list" class="notif-items-list" style="max-height: 240px;">
               <!-- Populated dynamically -->
@@ -165,25 +224,25 @@
       <!-- Navigation Center: Search & View Tabs -->
       <div class="nav-center">
         <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><i data-lucide="search"></i></span>
           <input type="text" id="search-input" class="search-input" placeholder="Search tasks, tags, or assignees..." aria-label="Search tasks">
         </div>
 
         <nav class="view-tabs" aria-label="Project views">
           <button class="view-tab active" data-view="board">
-            <span>📋</span> Board
+            <i data-lucide="kanban"></i> <span>Board</span>
           </button>
           <button class="view-tab" data-view="calendar">
-            <span>📅</span> Calendar
+            <i data-lucide="calendar"></i> <span>Calendar</span>
           </button>
           <button class="view-tab" data-view="list">
-            <span>📄</span> List
+            <i data-lucide="list-todo"></i> <span>List</span>
           </button>
           <button class="view-tab" data-view="analytics">
-            <span>📊</span> Analytics
+            <i data-lucide="bar-chart-3"></i> <span>Analytics</span>
           </button>
           <button class="view-tab" data-view="team">
-            <span>👥</span> Team & Log
+            <i data-lucide="users"></i> <span>Team & Log</span>
           </button>
         </nav>
       </div>
@@ -198,18 +257,18 @@
 
         <!-- Clean Spatial Theme Toggle (No D letter) -->
         <button id="theme-toggle-btn" class="spatial-theme-toggle" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
-          <span id="theme-mode-icon" class="theme-mode-icon">🌙</span>
+          <span id="theme-mode-icon" class="theme-mode-icon"><i data-lucide="moon"></i></span>
         </button>
 
         <!-- Settings Button -->
         <button id="settings-btn" class="icon-button" title="Workspace & Project Settings" aria-label="Settings">
-          ⚙️
+          <i data-lucide="settings"></i>
         </button>
 
         <!-- Notifications Bell -->
         <div style="position: relative;">
           <button id="notifications-btn" class="icon-button" title="Notifications" aria-label="Notifications">
-            🔔
+            <i data-lucide="bell"></i>
             <span id="notif-badge" class="notif-badge-count" style="display: none;">0</span>
           </button>
 
@@ -230,7 +289,7 @@
           <button id="user-menu-btn" class="user-menu-btn" title="Current profile and demo user switcher">
             <div id="nav-user-avatar" class="user-avatar-circle" style="background-color: #6366f1;">AR</div>
             <span id="nav-user-name" class="user-name-label">Alex Rivera</span>
-            <span style="font-size: 0.7rem; opacity: 0.7;">▼</span>
+            <span class="dropdown-chevron"><i data-lucide="chevron-down"></i></span>
           </button>
 
           <!-- User Profile & Auth Dropdown -->
@@ -239,10 +298,10 @@
               <span id="dropdown-current-user-name">Account</span>
             </div>
             <button id="dropdown-switch-btn" class="dropdown-item">
-              <span>🔄</span> Switch Account
+              <i data-lucide="users"></i> Switch Account
             </button>
             <button id="dropdown-delete-btn" class="dropdown-item" style="color: var(--color-danger);">
-              <span>🗑️</span> Delete Account
+              <i data-lucide="trash-2"></i> Delete Account
             </button>
             
             <div id="user-dropdown-demo-section">
@@ -292,7 +351,7 @@
             <div style="height: 1px; background: var(--border-glass); margin: 4px 0;"></div>
 
             <button id="dropdown-logout-btn" class="dropdown-item" style="color: var(--color-danger);">
-              <span>🚪</span> Log Out
+              <i data-lucide="log-out"></i> Log Out
             </button>
           </div>
         </div>
@@ -306,7 +365,7 @@
         <div>
           <div class="sidebar-section-title">
             <span>Group Projects</span>
-            <button id="sidebar-add-project-btn" class="sidebar-add-btn" title="Create new group project">+</button>
+            <button id="sidebar-add-project-btn" class="sidebar-add-btn" title="Create new group project"><i data-lucide="plus"></i></button>
           </div>
           <ul id="sidebar-projects-list" class="project-nav-list">
             <!-- Dynamic project list -->
@@ -319,19 +378,19 @@
           </div>
           <div class="filter-group">
             <button class="filter-pill-btn active" data-priority="all">
-              <span>🔘</span> All Tasks
+              <i data-lucide="layers"></i> All Tasks
             </button>
             <button class="filter-pill-btn" data-priority="urgent">
-              <span style="color: var(--prio-urgent);">🔴</span> Urgent
+              <i data-lucide="flame" class="icon-urgent"></i> Urgent
             </button>
             <button class="filter-pill-btn" data-priority="high">
-              <span style="color: var(--prio-high);">🟠</span> High Priority
+              <i data-lucide="arrow-up" class="icon-high"></i> High Priority
             </button>
             <button class="filter-pill-btn" data-priority="medium">
-              <span style="color: var(--prio-medium);">🔵</span> Medium Priority
+              <i data-lucide="minus" class="icon-medium"></i> Medium Priority
             </button>
             <button class="filter-pill-btn" data-priority="low">
-              <span style="color: var(--prio-low);">🟢</span> Low Priority
+              <i data-lucide="arrow-down" class="icon-low"></i> Low Priority
             </button>
           </div>
         </div>
@@ -354,11 +413,11 @@
             <div id="project-member-stack" class="member-stack"></div>
 
             <button id="invite-member-btn" class="btn-secondary" title="Invite teammate to project">
-              <span>➕</span> Invite Member
+              <i data-lucide="user-plus"></i> Invite Member
             </button>
 
             <button id="top-new-task-btn" class="btn-primary">
-              <span>+</span> New Task
+              <i data-lucide="plus"></i> New Task
             </button>
           </div>
         </div>
@@ -397,10 +456,10 @@
         <div class="workspace-toolbar">
           <div class="toolbar-left">
             <div class="quick-filter-pills" id="quick-filter-pills">
-              <button class="quick-filter-chip active" data-filter="all">All Tasks</button>
-              <button class="quick-filter-chip" data-filter="my-tasks">👤 My Tasks</button>
-              <button class="quick-filter-chip" data-filter="urgent">🔥 Urgent</button>
-              <button class="quick-filter-chip" data-filter="overdue">⚠️ Overdue</button>
+              <button class="quick-filter-chip active" data-filter="all"><i data-lucide="layout-grid"></i> All Tasks</button>
+              <button class="quick-filter-chip" data-filter="my-tasks"><i data-lucide="user"></i> My Tasks</button>
+              <button class="quick-filter-chip" data-filter="urgent"><i data-lucide="flame" class="icon-urgent"></i> Urgent</button>
+              <button class="quick-filter-chip" data-filter="overdue"><i data-lucide="alert-triangle" class="icon-urgent"></i> Overdue</button>
             </div>
           </div>
 
@@ -416,15 +475,15 @@
             </div>
 
             <button id="archive-done-btn" class="toolbar-btn" title="Archive completed tasks in Done column">
-              <span>📦</span> Archive Done
+              <i data-lucide="archive"></i> Archive Done
             </button>
 
             <button id="export-project-btn" class="toolbar-btn" title="Export project tasks to CSV file">
-              <span>📥</span> Export CSV
+              <i data-lucide="download"></i> Export CSV
             </button>
 
             <button id="shortcuts-help-btn" class="toolbar-btn" title="Keyboard Shortcuts Cheat Sheet">
-              <span>⌨️</span> Hotkeys
+              <i data-lucide="keyboard"></i> Hotkeys
             </button>
           </div>
         </div>
@@ -444,7 +503,7 @@
     <div class="modal-container modal-wide">
       <div class="modal-header">
         <span class="modal-title">Task Details</span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
 
       <div class="modal-body">
@@ -499,10 +558,10 @@
             <div class="side-field">
               <label class="side-label" for="modal-task-priority">Priority</label>
               <select id="modal-task-priority" class="side-select">
-                <option value="urgent">🔴 Urgent</option>
-                <option value="high">🟠 High</option>
-                <option value="medium">🔵 Medium</option>
-                <option value="low">🟢 Low</option>
+                <option value="urgent">● Urgent</option>
+                <option value="high">● High</option>
+                <option value="medium">● Medium</option>
+                <option value="low">● Low</option>
               </select>
             </div>
 
@@ -522,7 +581,7 @@
             </div>
 
             <button id="modal-task-delete-btn" class="btn-danger-outline">
-              🗑️ Delete Task
+              <i data-lucide="trash-2"></i> Delete Task
             </button>
           </div>
         </div>
@@ -535,7 +594,7 @@
     <div class="modal-container modal-standard">
       <div class="modal-header">
         <span class="modal-title">Create New Task</span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
       <form id="new-task-form">
         <div class="modal-body">
@@ -558,10 +617,10 @@
             <div class="form-group">
               <label class="form-label" for="new-task-priority">Priority</label>
               <select id="new-task-priority" class="form-select">
-                <option value="medium" selected>🔵 Medium</option>
-                <option value="high">🟠 High</option>
-                <option value="urgent">🔴 Urgent</option>
-                <option value="low">🟢 Low</option>
+                <option value="medium" selected>● Medium</option>
+                <option value="high">● High</option>
+                <option value="urgent">● Urgent</option>
+                <option value="low">● Low</option>
               </select>
             </div>
 
@@ -595,7 +654,7 @@
     <div class="modal-container modal-standard">
       <div class="modal-header">
         <span class="modal-title">Create Group Project</span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
       <form id="new-project-form">
         <div class="modal-body">
@@ -646,7 +705,7 @@
     <div class="modal-container modal-standard">
       <div class="modal-header">
         <span class="modal-title">Invite Teammate</span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body">
         <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 14px;">
@@ -661,8 +720,8 @@
   <dialog id="settings-modal">
     <div class="modal-container modal-wide" style="max-width: 680px;">
       <div class="modal-header">
-        <span class="modal-title">⚙️ Workspace Settings</span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <span class="modal-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="settings"></i> Workspace Settings</span>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" style="display: flex; flex-direction: column; gap: 24px;">
         
@@ -671,10 +730,10 @@
           <div class="section-label">Appearance & Visual Theme</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <button id="settings-theme-dark-btn" class="btn-secondary" style="justify-content: center; gap: 8px;">
-              <span>🌙</span> Dark Mode
+              <i data-lucide="moon"></i> Dark Mode
             </button>
             <button id="settings-theme-light-btn" class="btn-secondary" style="justify-content: center; gap: 8px;">
-              <span>☀️</span> Light Mode
+              <i data-lucide="sun"></i> Light Mode
             </button>
           </div>
 
@@ -761,6 +820,28 @@
           </div>
         </div>
 
+        <!-- Section 5: Security & Password -->
+        <div>
+          <div class="section-label">Security & Password</div>
+          <form id="settings-password-form" style="display: flex; flex-direction: column; gap: 12px; background: var(--bg-card); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="settings-current-password">Current Password</label>
+                <input type="password" id="settings-current-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="settings-new-password">New Password (min 6 chars)</label>
+                <input type="password" id="settings-new-password" class="form-input" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button type="submit" class="btn-primary" style="padding: 6px 14px; font-size: 0.82rem;">
+                <i data-lucide="lock"></i> Update Password
+              </button>
+            </div>
+          </form>
+        </div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-primary modal-close-btn" style="padding: 8px 18px;">Done</button>
@@ -773,9 +854,9 @@
     <div class="modal-container modal-standard" style="max-width: 440px;">
       <div class="modal-header">
         <span class="modal-title" style="color: var(--color-danger); display: flex; align-items: center; gap: 8px;">
-          <span>⚠️</span> Delete Account
+          <i data-lucide="alert-triangle"></i> Delete Account
         </span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
       <form id="form-delete-account" class="modal-body" style="display: flex; flex-direction: column; gap: 14px; padding: 20px;">
         <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
@@ -798,9 +879,9 @@
     <div class="modal-container modal-standard" style="max-width: 480px;">
       <div class="modal-header">
         <span class="modal-title" style="display: flex; align-items: center; gap: 8px;">
-          <span>⌨️</span> Keyboard Shortcuts
+          <i data-lucide="keyboard"></i> Keyboard Shortcuts
         </span>
-        <button class="modal-close-btn" aria-label="Close dialog">&times;</button>
+        <button class="modal-close-btn" aria-label="Close dialog"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" style="padding: 18px 22px;">
         <div class="shortcuts-grid">
@@ -856,6 +937,7 @@
   <div id="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
+  <script src="js/lucide.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/ws.js"></script>
   <script src="js/state.js"></script>

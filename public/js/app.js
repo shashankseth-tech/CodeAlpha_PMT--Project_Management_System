@@ -351,7 +351,7 @@ function bindFormSubmissions() {
         await UI.switchUserSession(res.user);
         document.getElementById('auth-modal')?.close();
         regForm.reset();
-        UI.showToast('Account Created! 🎉', `Welcome to PMT, ${res.user.name}! Your workspace is ready.`, 'success');
+        UI.showToast('Account Created', `Welcome to PMT, ${res.user.name}! Your workspace is ready.`, 'success');
       } catch (err) {
         console.error('Registration error:', err);
         UI.showToast('Registration Error', err.message || 'Could not create account', 'danger');
@@ -392,6 +392,126 @@ function bindFormSubmissions() {
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Delete My Account';
+        }
+      }
+    };
+  }
+
+  // 7. Request Reset Code Button
+  const reqCodeBtn = document.getElementById('btn-request-reset-code');
+  if (reqCodeBtn) {
+    reqCodeBtn.onclick = async () => {
+      const emailInput = document.getElementById('forgot-email');
+      const email = emailInput ? emailInput.value.trim() : '';
+      if (!email) {
+        UI.showToast('Email Required', 'Please enter your registered email address first.', 'warning');
+        emailInput?.focus();
+        return;
+      }
+      try {
+        reqCodeBtn.disabled = true;
+        reqCodeBtn.textContent = 'Generating...';
+        const res = await API.forgotPassword(email);
+        UI.showToast('Reset Code Ready', `Verification code: ${res.code}`, 'success');
+
+        const banner = document.getElementById('forgot-code-banner');
+        const display = document.getElementById('forgot-code-display');
+        const codeInput = document.getElementById('forgot-code');
+        if (banner && display) {
+          display.textContent = res.code;
+          banner.style.display = 'flex';
+        }
+        if (codeInput) {
+          codeInput.value = res.code;
+          document.getElementById('forgot-new-password')?.focus();
+        }
+      } catch (err) {
+        console.error('Forgot password error:', err);
+        UI.showToast('Request Failed', err.message || 'Could not generate reset code', 'danger');
+      } finally {
+        reqCodeBtn.disabled = false;
+        reqCodeBtn.innerHTML = `${UI.icon('send', { size: 12 })} Get Code`;
+      }
+    };
+  }
+
+  // 8. Forgot / Reset Password Form Submission
+  const forgotForm = document.getElementById('form-auth-forgot');
+  if (forgotForm) {
+    forgotForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value.trim();
+      const code = document.getElementById('forgot-code').value.trim();
+      const newPassword = document.getElementById('forgot-new-password').value;
+      const confirmPassword = document.getElementById('forgot-confirm-password').value;
+      const submitBtn = forgotForm.querySelector('button[type="submit"]');
+
+      if (!email || !code || !newPassword) return;
+
+      if (newPassword.length < 6) {
+        UI.showToast('Weak Password', 'New password must be at least 6 characters.', 'warning');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        UI.showToast('Password Mismatch', 'New password and confirmation password do not match.', 'danger');
+        return;
+      }
+
+      try {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Resetting Password...';
+        }
+        const res = await API.resetPassword(email, code, newPassword);
+        await UI.switchUserSession(res.user);
+        forgotForm.reset();
+        const banner = document.getElementById('forgot-code-banner');
+        if (banner) banner.style.display = 'none';
+        UI.showToast('Password Reset Successfully!', `Welcome back, ${res.user.name}!`, 'success');
+      } catch (err) {
+        console.error('Reset password error:', err);
+        UI.showToast('Reset Failed', err.message || 'Invalid or expired code', 'danger');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `${UI.icon('check-circle-2', { size: 14 })} Update Password & Sign In`;
+        }
+      }
+    };
+  }
+
+  // 9. Change Password Form Submission (in Settings Modal)
+  const changePassForm = document.getElementById('settings-password-form');
+  if (changePassForm) {
+    changePassForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const curPass = document.getElementById('settings-current-password').value;
+      const newPass = document.getElementById('settings-new-password').value;
+      const submitBtn = changePassForm.querySelector('button[type="submit"]');
+
+      if (!curPass || !newPass) return;
+
+      if (newPass.length < 6) {
+        UI.showToast('Weak Password', 'New password must be at least 6 characters.', 'warning');
+        return;
+      }
+
+      try {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Updating...';
+        }
+        await API.changePassword(curPass, newPass);
+        changePassForm.reset();
+        UI.showToast('Password Updated', 'Your account password has been updated successfully.', 'success');
+      } catch (err) {
+        console.error('Change password error:', err);
+        UI.showToast('Update Failed', err.message || 'Incorrect current password', 'danger');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `${UI.icon('lock', { size: 14 })} Update Password`;
         }
       }
     };

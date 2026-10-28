@@ -253,4 +253,134 @@ router.delete('/account', requireAuth, (req, res) => {
   }
 });
 
+
+// Request Password Reset Code
+router.post('/forgot-password', (req, res) => {
+  try {
+    const { email } = req.body || {};
+    if (!email) {
+      return res.status(400).json({ error: 'Please enter your registered email address' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const user = getUserByEmail(cleanEmail);
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with this email address' });
+    }
+
+    // Generate 6-digit secure verification code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    db.prepare(`
+      INSERT INTO password_resets (email, code, expires_at)
+      VALUES (?, ?, ?)
+      ON CONFLICT(email) DO UPDATE SET code = excluded.code, expires_at = excluded.expires_at
+    `).run(cleanEmail, code, expiresAt);
+
+    console.log(`[AUTH] Password reset requested for ${cleanEmail}. Verification Code: ${code}`);
+
+    res.json({
+      message: 'Password reset code generated successfully',
+      code: code,
+      email: cleanEmail
+    });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ error: 'Failed to process password reset request' });
+  }
+});
+
+// Reset Password with Verification Code
+router.post('/reset-password', (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body || {};
+
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ error: 'Email, verification code, and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const resetRecord = db.prepare('SELECT * FROM password_resets WHERE email = ?').get(cleanEmail);
+
+    if (!resetRecord) {
+      return res.status(400).json({ error: 'No reset request found for this email. Please request a new code.' });
+    }
+
+    if (resetRecord.code !== code.trim()) {
+      return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' });
+    }
+
+    if (Date.now() > resetRecord.expires_at) {
+      db.prepare('DELETE FROM password_resets WHERE email = ?').run(cleanEmail);
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' });
+    }
+
+    // Hash new password & update user
+    const passwordHash = bcrypt.hashSync(newPassword, 10);
+    db.prepare('UPDATE users SET password_hash = ? WHERE email = ?').run(passwordHash, cleanEmail);
+
+    // Delete used reset code
+    db.prepare('DELETE FROM password_resets WHERE email = ?').run(cleanEmail);
+
+    // Fetch user & generate fresh JWT token for seamless sign in
+    const user = getUserByEmail(cleanEmail);
+    const token = generateToken(user);
+
+    res.json({
+      message: 'Password has been successfully reset! Signing you in...',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatarColor: user.avatar_color,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// Change Password (for logged-in user in Settings modal)
+router.post('/change-password', requireAuth, (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+
+    const userId = req.user.id;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isMatch = bcrypt.compareSync(currentPassword, user.password_hash);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Incorrect current password' });
+    }
+
+    const passwordHash = bcrypt.hashSync(newPassword, 10);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
 module.exports = router;
+

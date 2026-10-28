@@ -300,3 +300,41 @@
   font-size: 0.72rem;
   color: var(--text-muted);
 }
+
+
+/* Toast Lucide Icons */
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toast.success .toast-icon {
+  color: var(--color-success);
+}
+
+.toast.danger .toast-icon {
+  color: var(--color-danger);
+}
+
+.toast.info .toast-icon {
+  color: var(--accent-primary);
+}
+
+.toast-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.toast-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close svg {
+  width: 14px;
+  height: 14px;
+}
